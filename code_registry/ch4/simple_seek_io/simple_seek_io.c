@@ -1,10 +1,10 @@
 /*******************************
- * Description: 
+ * Description:
  * demonstrates the use of lseek() in conjunction with read() and write().
- * The first command-line argument to this program is the name of a file to be 
- * opened. 
- * The remaining arguments specify I/O operations to be performed on the file. 
- * Each of these operations consists of a letter followed by an associated value 
+ * The first command-line argument to this program is the name of a file to be
+ * opened.
+ * The remaining arguments specify I/O operations to be performed on the file.
+ * Each of these operations consists of a letter followed by an associated value
  * (with no separating space):
  *  - soffset: Seek to byte offset from the start of the file.
  *  - rlength: Read length bytes from the file, starting at the current file offset, and
@@ -12,9 +12,24 @@
  *  - Rlength: Read length bytes from the file, starting at the current file offset, and
  *    display them in hexadecimal.
  *  - wstr: Write the string of characters specified in str at the current file offset.
- * 
- * *****************************/
+ *
+   This program opens the file named on its command line, and then performs
+   the file I/O operations specified by its remaining command-line arguments:
 
+           r<length>    Read 'length' bytes from the file at current
+                        file offset, displaying them as text.
+
+           R<length>    Read 'length' bytes from the file at current
+                        file offset, displaying them in hex.
+
+           w<string>    Write 'string' at current file offset.
+
+           s<offset>    Set the file offset to 'offset'.
+
+   Example:
+
+        seek_io myfile wxyz s1 r2
+ * *****************************/
 
 #include <sys/types.h>  /* Type definitions used by many programs */
 #include <stdio.h>      /* Standard I/O functions */
@@ -61,13 +76,16 @@ int main(int argc, char *argv[])
         switch (argv[ap][0]) {
         case 'r':   /* Display bytes at current offset, as text */
         case 'R':   /* Display bytes at current offset, in hex */
+            // converts the initial part of the string in
+            //    nptr to a long integer value according to the given base 
             len = getLong(&argv[ap][1], GN_ANY_BASE, argv[ap]);
 
-            buf = malloc(len);
+            buf = malloc(len); // allocate memory for the string to be buffered.
             if (buf == NULL)
                 exit("malloc");
 
             numRead = read(fd, buf, len);
+            
             if (numRead == -1)
                 exit("read");
 
@@ -172,8 +190,7 @@ getNum(const char *fname, const char *arg, int flags, const char *name)
 /* Convert a numeric command-line argument string to a long integer. See the
    comments for getNum() for a description of the arguments to this function. */
 
-long
-getLong(const char *arg, int flags, const char *name)
+long getLong(const char *arg, int flags, const char *name)
 {
     return getNum("getLong", arg, flags, name);
 }
